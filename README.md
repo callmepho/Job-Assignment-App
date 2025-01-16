@@ -19,3 +19,14 @@ Run commands:
 ```
 mvn spring-boot:run
 ```
+## Task
+
+- [x] Job Assignment API
+- [ ] Frontend
+- [ ] Auth
+- [ ] Testing
+
+### Current working on
+
+- ~~Backend Api~~
+- Frontend
