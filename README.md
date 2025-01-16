@@ -1,8 +1,8 @@
 # Job Assignment App
 
 ## TechStack
--Spring Boot
--MySQL
+- Spring Boot
+- MySQL
 
 Running backend SpringBoot
 Navigate into resourcing-backend folder
