@@ -1,6 +1,8 @@
 # Job Assignment App
 
 ## TechStack
+
+- Vite/React
 - Spring Boot
 - MySQL
 
@@ -19,6 +21,7 @@ Run commands:
 ```
 mvn spring-boot:run
 ```
+
 ## Task
 
 - [x] Job Assignment API
