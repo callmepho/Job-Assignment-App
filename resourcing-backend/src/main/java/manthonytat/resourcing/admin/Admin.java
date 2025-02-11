@@ -12,4 +12,11 @@ public class Admin extends User {
   @Getter
   @Setter
   private String department;
+
+  public Admin() {
+  }
+
+  public Admin(String department) {
+    this.department = department;
+  }
 }
