@@ -5,7 +5,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.github.javafaker.Faker;
 
 import jakarta.transaction.Transactional;
 import manthonytat.resourcing.auth.RegisterDTO;
@@ -23,6 +26,11 @@ public class TempService {
 
   @Autowired
   private JobRepository jobRepository;
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+
+  private Faker faker = new Faker();
 
   public List<TempDTO> findAll() {
     return this.tempRepository.findAll().stream()
@@ -53,7 +61,7 @@ public class TempService {
     Temp newTemp = new Temp(firstName, lastName, null);
     newTemp.setEmail(data.getEmail());
     newTemp.setPassword(data.getPassword());
-    newTemp.setRole(Role.ADMIN);
+    newTemp.setRole(Role.TEMP);
     return this.tempRepository.save(newTemp);
   }
 
@@ -87,5 +95,21 @@ public class TempService {
         .map(job -> new JobDTO(job.getId(), job.getName(), job.getStartDate(), job.getEndDate()))
         .collect(Collectors.toList());
     return new TempDTO(temp.getId(), temp.getFirstName(), temp.getLastName(), jobs);
+  }
+
+  public void createFakeUsers(long number) {
+    String[] emailProviders = { "gmail.com", "yahoo.com", "outlook.com", "hotmail.com" };
+    for (int i = 0; i < number; i++) {
+      String firstName = faker.name().firstName();
+      String lastName = faker.name().lastName();
+      String provider = emailProviders[faker.random().nextInt(emailProviders.length)];
+      String email = firstName + "." + lastName + "@" + provider;
+      String password = passwordEncoder.encode("password123");
+      Temp newTemp = new Temp(firstName, lastName, null);
+      newTemp.setEmail(email);
+      newTemp.setPassword(password);
+      newTemp.setRole(Role.TEMP);
+      this.tempRepository.save(newTemp);
+    }
   }
 }
