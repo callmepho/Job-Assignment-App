@@ -1,16 +1,17 @@
 import { AxiosResponse } from "axios";
 import instance from "./axios";
-import { Job } from "./jobs";
+import { Job, JobDTO } from "./jobs";
 import { TokenPayload } from "./auth";
 
 export interface Temp {
   id: number;
   firstName: string;
   lastName: string;
-  jobs: Job[];
+  jobs: JobDTO[];
 }
 
 export interface TempDTO {
+  id: number;
   firstName: string;
   lastName: string;
 }
@@ -19,16 +20,17 @@ interface QueryParams {
   jobId: number;
 }
 
-const queryBuilder = ({ jobId }: QueryParams) => {
+const queryBuilder = (queryParams?: QueryParams) => {
+  if (!queryParams) return "";
   const queryArray: string[] = [];
-  if (jobId) {
-    queryArray.push(`jobId=${jobId}`);
+  if (queryParams.jobId) {
+    queryArray.push(`jobId=${queryParams.jobId}`);
   }
   return "?" + queryArray.join("&");
 };
 
 export class Temps {
-  public static async get(queryParams: QueryParams): Promise<Temp[]> {
+  public static async get(queryParams?: QueryParams): Promise<Temp[]> {
     const queryString = queryBuilder(queryParams);
     const response = await instance.get("/temps" + queryString);
     return response.data;

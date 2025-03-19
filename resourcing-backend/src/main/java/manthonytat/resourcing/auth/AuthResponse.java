@@ -8,6 +8,10 @@ public class AuthResponse {
   @Setter
   private String token;
 
+  // @Getter
+  // @Setter
+  // private String refreshToken;
+
   public AuthResponse() {
   }
 

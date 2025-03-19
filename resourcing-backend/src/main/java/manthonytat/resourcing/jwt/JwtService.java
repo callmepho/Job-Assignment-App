@@ -30,6 +30,17 @@ public class JwtService {
         .compact();
   }
 
+  public String generateRefreshToken(User user) {
+    return Jwts
+        .builder()
+        .setClaims(null)
+        .setSubject(user.getId().toString())
+        .setIssuedAt(new Date(System.currentTimeMillis()))
+        .setExpiration(new Date(System.currentTimeMillis() + 1000 * 3600))
+        .signWith(this.getSingInKey(), SignatureAlgorithm.HS256)
+        .compact();
+  }
+
   private Key getSingInKey() {
     // I will need to read my secret key from a .env file
     String secret = dotenv.get("JWT_SECRET");

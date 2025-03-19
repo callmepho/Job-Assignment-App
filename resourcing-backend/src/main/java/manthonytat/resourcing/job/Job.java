@@ -18,40 +18,53 @@ import manthonytat.resourcing.temp.Temp;
 @Entity
 @Table(name = "Jobs")
 public class Job {
-	
+
 	@Getter
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@Column
 	@Getter
 	@Setter
 	private String name;
-	
+
 	@Column
 	@Getter
 	@Setter
 	private Date startDate;
-	
+
 	@Column
 	@Getter
 	@Setter
 	private Date endDate;
-	
+
 	@Getter
 	@Setter
 	@ManyToOne
-  @JoinColumn(name = "temp_id")
+	@JoinColumn(name = "temp_id")
 	@JsonBackReference
-  private Temp temp;
-	
-	public Job() {}
+	private Temp temp;
 
-  public Job(String name, Date startDate, Date endDate,Temp temp) {
-      this.name = name;
-      this.startDate = startDate;
-      this.endDate = endDate;
-			this.temp = temp;
-  }
+	@Getter
+	@Setter
+	private boolean fake = false;
+
+	public Job() {
+	}
+
+	public Job(String name, Date startDate, Date endDate, Temp temp) {
+		this.name = name;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.temp = temp;
+	}
+
+	public Job(String name, Date startDate, Date endDate, Temp temp, boolean fake) {
+		this.name = name;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.temp = temp;
+		this.fake = fake;
+	}
 }

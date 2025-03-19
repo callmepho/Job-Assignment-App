@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,9 +17,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
+import manthonytat.resourcing.enums.Role;
+import manthonytat.resourcing.refreshToken.RefreshToken;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -44,9 +48,8 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public enum Role {
-        ADMIN, TEMP
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RefreshToken> refreshTokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

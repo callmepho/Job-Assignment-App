@@ -12,11 +12,11 @@ import com.github.javafaker.Faker;
 
 import jakarta.transaction.Transactional;
 import manthonytat.resourcing.auth.RegisterDTO;
+import manthonytat.resourcing.enums.Role;
 import manthonytat.resourcing.exceptions.NotFoundException;
 import manthonytat.resourcing.job.Job;
 import manthonytat.resourcing.job.JobDTO;
 import manthonytat.resourcing.job.JobRepository;
-import manthonytat.resourcing.user.User.Role;
 
 @Service
 @Transactional
@@ -29,8 +29,6 @@ public class TempService {
 
   @Autowired
   private PasswordEncoder passwordEncoder;
-
-  private Faker faker = new Faker();
 
   public List<TempDTO> findAll() {
     return this.tempRepository.findAll().stream()
@@ -97,6 +95,8 @@ public class TempService {
     return new TempDTO(temp.getId(), temp.getFirstName(), temp.getLastName(), jobs);
   }
 
+  private Faker faker = new Faker();
+
   public void createFakeUsers(long number) {
     String[] emailProviders = { "gmail.com", "yahoo.com", "outlook.com", "hotmail.com" };
     for (int i = 0; i < number; i++) {
@@ -105,11 +105,15 @@ public class TempService {
       String provider = emailProviders[faker.random().nextInt(emailProviders.length)];
       String email = firstName + "." + lastName + "@" + provider;
       String password = passwordEncoder.encode("password123");
-      Temp newTemp = new Temp(firstName, lastName, null);
+      Temp newTemp = new Temp(firstName, lastName, null, true);
       newTemp.setEmail(email);
       newTemp.setPassword(password);
       newTemp.setRole(Role.TEMP);
       this.tempRepository.save(newTemp);
     }
+  }
+
+  public void deleteFakeJobs() {
+    this.tempRepository.deleteByFakeTrue();
   }
 }

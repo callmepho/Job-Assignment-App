@@ -1,5 +1,5 @@
 import instance from "./axios";
-import { Job } from "./jobs";
+import { Job, JobDTO } from "./jobs";
 
 export interface User {
   email: string;
@@ -14,7 +14,7 @@ export interface UserDetails {
   firstName: string;
   lastName: string;
   role: string;
-  jobs: Job[];
+  jobs: JobDTO[];
 }
 
 export class Users {

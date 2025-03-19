@@ -27,6 +27,9 @@ public class AuthService {
   @Autowired
   private JwtService jwtService;
 
+  // @Autowired
+  // private RefreshTokenService refreshTokenService;
+
   @Autowired
   private AuthenticationManager authenticationManager;
 
@@ -53,6 +56,25 @@ public class AuthService {
     }
 
     String token = this.jwtService.generateToken(user);
+    // String refreshToken = this.jwtService.generateRefreshToken(user);
     return new AuthResponse(token);
   }
+
+  // public AuthResponse refreshToken(String refreshToken) {
+  // Long id = this.jwtService.extractUserId(refreshToken);
+
+  // // check refreshToken db for token
+  // Optional<RefreshToken> foundRefreshToken =
+  // this.refreshTokenService.findByToken(refreshToken);
+  // if (!foundRefreshToken.isPresent() ||
+  // !this.refreshTokenService.isValid(foundRefreshToken.get())) {
+  // new RuntimeException("Invalid or expired refresh token");
+  // }
+
+  // User user = this.userService.getById(id);
+  // String newAccessToken = this.jwtService.generateToken(user);
+
+  // return new AuthResponse(newAccessToken, refreshToken);
+  // }
+
 }

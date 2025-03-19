@@ -30,6 +30,9 @@ public class SecurityConfig {
         .authorizeHttpRequests((requests) -> requests
             .requestMatchers("/auth/register").permitAll()
             .requestMatchers("/auth/login").permitAll()
+            .requestMatchers("/temps/current").authenticated()
+            .requestMatchers("/user/current").authenticated()
+            .requestMatchers("/jobs/**").authenticated()
             .requestMatchers("/temps/**").authenticated()
             .anyRequest().denyAll())
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

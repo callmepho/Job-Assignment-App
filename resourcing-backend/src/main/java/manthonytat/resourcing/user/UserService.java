@@ -3,13 +3,16 @@ package manthonytat.resourcing.user;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import manthonytat.resourcing.admin.Admin;
 import manthonytat.resourcing.admin.AdminRepository;
+import manthonytat.resourcing.enums.Role;
 import manthonytat.resourcing.exceptions.NotFoundException;
-import manthonytat.resourcing.user.User.Role;
 
 @Service
 @Transactional
@@ -20,6 +23,9 @@ public class UserService {
 
   @Autowired
   private AdminRepository adminRepository;
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
   public User getById(Long id) {
     Optional<User> foundUser = this.userRepository.findById(id);
@@ -38,7 +44,7 @@ public class UserService {
     if (adminExists.isEmpty()) {
       Admin admin = new Admin("init");
       admin.setEmail("admin@admin.com");
-      admin.setPassword("admin123");
+      admin.setPassword(passwordEncoder.encode("admin123"));
       admin.setRole(Role.ADMIN);
       this.adminRepository.save(admin);
       System.out.println("Admin user created successfully!");
@@ -49,5 +55,19 @@ public class UserService {
 
   public long getUserCount() {
     return this.userRepository.count();
+  }
+
+  public User getAuthenticatedUser() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    return (User) auth.getPrincipal();
+  }
+
+  public boolean getAuthenticatedRole(String role) {
+    User user = getAuthenticatedUser();
+    if (user.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(role))) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

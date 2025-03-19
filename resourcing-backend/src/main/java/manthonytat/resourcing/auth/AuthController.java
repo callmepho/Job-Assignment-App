@@ -25,4 +25,17 @@ public class AuthController {
   public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginDTO data) {
     return new ResponseEntity<>(this.authService.login(data), HttpStatus.OK);
   }
+
+  // @PostMapping("/refresh")
+  // public ResponseEntity<AuthResponse> refresh(@RequestParam String
+  // refreshToken) {
+  // return ResponseEntity.ok(this.authService.refreshToken(refreshToken));
+  // }
+
+  // @PostMapping("/logout")
+  // public ResponseEntity<String> logout(@RequestParam AuthResponse request) {
+  // String refreshToken = request.getRefreshToken();
+  // this.authService.logout(refreshToken);
+  // return ResponseEntity.ok("Logged out successfully");
+  // }
 }

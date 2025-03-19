@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Job, Jobs } from "@/services/jobs";
+import { Job, JobDTO, Jobs } from "@/services/jobs";
 import { CalendarIcon, SquarePen } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -40,7 +40,7 @@ const JobsPage = () => {
   const fetchJobsData = async () => {
     await Jobs.get()
       .then((data) => setJobs(data))
-      .catch((e) => console.log);
+      .catch((e) => console.log(e));
   };
 
   useEffect(() => {
@@ -48,17 +48,21 @@ const JobsPage = () => {
   }, []);
   return (
     <>
-      <Button onClick={() => setModalOpen(true)}>Create new job</Button>
+      <Button onClick={() => setModalOpen(true)}>Post job</Button>
       <div className="flex flex-col my-4 gap-4 justify-center items-center">
         {jobs.map((job, idx) => (
-          <JobCard data={job} key={`job${idx}`} />
+          <JobCard data={job} key={`job${idx}`} fetchJobsData={fetchJobsData} />
         ))}
       </div>
       <Modal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         title="Create Job">
-        <JobCreateForm />
+        <JobForm
+          job={null}
+          setModalOpen={setModalOpen}
+          fetchJobsData={fetchJobsData}
+        />
       </Modal>
     </>
   );
@@ -68,9 +72,10 @@ export default JobsPage;
 
 interface CardData {
   data: Job;
+  fetchJobsData: () => void;
 }
 
-const JobCard = ({ data }: CardData) => {
+const JobCard = ({ data, fetchJobsData }: CardData) => {
   const [isModalOpen, setModalOpen] = useState(false);
   return (
     <Card className="w-xl h-min">
@@ -99,7 +104,11 @@ const JobCard = ({ data }: CardData) => {
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         title="Editing Job">
-        <p>This is a reusable modal component.</p>
+        <JobForm
+          job={data}
+          setModalOpen={setModalOpen}
+          fetchJobsData={fetchJobsData}
+        />
       </Modal>
     </Card>
   );
@@ -114,18 +123,59 @@ const jobSchema: Yup.ObjectSchema<any> = Yup.object().shape({
   temp: Yup.mixed<Temp>().nullable(),
 });
 
-const JobCreateForm = () => {
+const JobForm = ({
+  job,
+  setModalOpen,
+  fetchJobsData,
+}: {
+  job: Job | null;
+  setModalOpen: any;
+  fetchJobsData: any;
+}) => {
   const form = useForm<any>({
     resolver: yupResolver(jobSchema),
     defaultValues: {
-      name: "",
-      startDate: new Date(),
-      endDate: new Date(),
-      temp: null,
+      name: job?.name || "",
+      startDate: job?.startDate ? new Date(job.startDate) : new Date(),
+      endDate: job?.endDate ? new Date(job.endDate) : new Date(),
+      temp: job?.temp || null,
     },
   });
 
-  const onSubmit = () => {};
+  useEffect(() => {
+    if (job) {
+      form.reset({
+        name: job.name,
+        startDate: new Date(job.startDate),
+        endDate: new Date(job.endDate),
+        temp: job.temp,
+      });
+    }
+  }, [job, form]);
+
+  const onSubmit = async (data: JobDTO) => {
+    if (job) {
+      //patch job here
+      await Jobs.patch(job.id, data)
+        .then(() => setModalOpen(false))
+        .catch((e) => console.log(e));
+      fetchJobsData();
+    } else {
+      //create job here
+      await Jobs.create(data)
+        .then(() => setModalOpen(false))
+        .catch((e) => console.log(e));
+      fetchJobsData();
+    }
+  };
+
+  const deleteJob = async () => {
+    if (job) {
+      await Jobs.delete(job.id)
+        .then(() => setModalOpen(false))
+        .catch((e) => console.log(e));
+    }
+  };
 
   return (
     <Form {...form}>
@@ -224,8 +274,17 @@ const JobCreateForm = () => {
             </FormItem>
           )}
         />
-
-        <Button type="submit">Submit</Button>
+        <div className="flex w-100 justify-between">
+          <Button type="submit">Submit</Button>
+          {job ? (
+            <Button
+              variant="destructive"
+              onClick={() => deleteJob()}
+              type="button">
+              Delete
+            </Button>
+          ) : null}
+        </div>
       </form>
     </Form>
   );

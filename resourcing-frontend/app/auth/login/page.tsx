@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { AuthContext, setTokenStorage } from "@/contexts/authContext";
+import { AuthContext, setTokenStorage } from "@/contexts/AuthContext";
 import { useForm } from "react-hook-form";
 import { RegisterPayLoad } from "@/services/auth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

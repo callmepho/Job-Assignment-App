@@ -1,19 +1,19 @@
 import instance from "./axios";
-import { Temp } from "./temps";
+import { Temp, TempDTO } from "./temps";
 
 export interface Job {
   id: number;
   name: string;
   startDate: Date;
   endDate: Date;
-  temp: Temp;
+  temp: TempDTO;
 }
 
 export interface JobDTO {
   name: string;
   startDate: Date;
   endDate: Date;
-  temp: Temp | null;
+  tempId: number;
 }
 
 interface QueryParams {
@@ -48,6 +48,11 @@ export class Jobs {
 
   public static async create(data: any): Promise<Job> {
     const response = await instance.post("/jobs", data);
+    return response.data;
+  }
+
+  public static async delete(id: number): Promise<any> {
+    const response = await instance.delete(`/jobs/${id}`);
     return response.data;
   }
 }

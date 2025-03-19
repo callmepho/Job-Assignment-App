@@ -9,9 +9,10 @@ const instance = axios.create({
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      window.localStorage.removeItem("token");
+    if (error.response && !window.localStorage.getItem("token")) {
       window.location.href = "/auth/login";
+    } else if (error.response && error.response.status === 401) {
+      window.location.href = "/error/401";
     } else {
       return Promise.reject(error);
     }

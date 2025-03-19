@@ -1,20 +1,10 @@
 "use client";
 
 import { withAuth } from "@/components/hoc/withAuth";
-import { Job } from "@/services/jobs";
+import { Job, JobDTO } from "@/services/jobs";
 import { Temps } from "@/services/temps";
-import { Users } from "@/services/user";
+import { UserDetails, Users } from "@/services/user";
 import React, { useEffect, useState } from "react";
-
-export interface UserDetails {
-  id: number;
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  jobs: Job[];
-}
 
 const getCurrentUser = async () => {
   const userDetail = await Users.currentUser();
@@ -63,4 +53,4 @@ const ProfilePage = () => {
   );
 };
 
-export default withAuth(ProfilePage);
+export default ProfilePage;

@@ -35,6 +35,10 @@ public class Temp extends User {
 	@OneToMany(mappedBy = "temp", cascade = CascadeType.ALL)
 	private List<Job> jobs;
 
+	@Getter
+	@Setter
+	private boolean fake = false;
+
 	public Temp() {
 	}
 
@@ -42,5 +46,12 @@ public class Temp extends User {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.jobs = jobs;
+	}
+
+	public Temp(String firstName, String lastName, List<Job> jobs, boolean fake) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.jobs = jobs;
+		this.fake = fake;
 	}
 }
