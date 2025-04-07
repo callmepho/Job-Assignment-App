@@ -22,7 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Temp } from "@/services/temps";
+import { Temp, Temps } from "@/services/temps";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -32,6 +32,15 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 
 const JobsPage = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -76,7 +85,8 @@ interface CardData {
 }
 
 const JobCard = ({ data, fetchJobsData }: CardData) => {
-  const [isModalOpen, setModalOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+
   return (
     <Card className="w-xl h-min">
       <CardHeader>
@@ -93,11 +103,15 @@ const JobCard = ({ data, fetchJobsData }: CardData) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        Assigned Temp:{" "}
         {data.temp ? (
-          `${data.temp.firstName} ${data.temp.lastName}`
+          <div>
+            <p>
+              Assigned Temp: {data.temp.firstName} {data.temp.lastName}
+            </p>
+            <TempDrawer data={data} fetchJobsData={fetchJobsData} />
+          </div>
         ) : (
-          <span className="italic font-thin">none</span>
+          <TempDrawer data={data} fetchJobsData={fetchJobsData} />
         )}
       </CardContent>
       <Modal
@@ -111,6 +125,65 @@ const JobCard = ({ data, fetchJobsData }: CardData) => {
         />
       </Modal>
     </Card>
+  );
+};
+
+const TempDrawer = ({ data, fetchJobsData }: CardData) => {
+  const [availableTemp, setAvailableTemp] = useState<Temp[]>([]);
+  const fetchTempForJob = async () => {
+    await Temps.get({ jobId: data.id })
+      .then((temps: Temp[]) => setAvailableTemp(temps))
+      .catch((e) => console.log(e));
+  };
+
+  const assignTemp = async (tempId: number) => {
+    try {
+      await Jobs.patch(data.id, { tempId: tempId });
+    } catch (e) {
+      console.log(e);
+    } finally {
+      fetchJobsData();
+    }
+  };
+  return (
+    <Drawer>
+      <DrawerTrigger asChild>
+        <Button className="w-min" variant="outline" onClick={fetchTempForJob}>
+          {data.temp ? "Edit Temp" : "Assign Temp"}
+        </Button>
+      </DrawerTrigger>
+      <DrawerContent>
+        <div className="flex flex-col justify-center items-center">
+          <DrawerHeader>
+            <DrawerTitle>Assign Available Temps</DrawerTitle>
+            <DrawerDescription>
+              List of temps you can assign for this job
+            </DrawerDescription>
+          </DrawerHeader>
+          <DrawerClose asChild>
+            {data.temp && (
+              <Button
+                className="w-max cursor-pointer"
+                variant="destructive"
+                onClick={() => assignTemp(0)}>
+                Remove Temp
+              </Button>
+            )}
+          </DrawerClose>
+          {availableTemp &&
+            availableTemp.map((temp, idx) => (
+              <DrawerClose asChild key={`temp${idx}`}>
+                <Button
+                  className="w-max cursor-pointer"
+                  variant="ghost"
+                  onClick={() =>
+                    assignTemp(temp.id)
+                  }>{`${temp.firstName} ${temp.lastName}`}</Button>
+              </DrawerClose>
+            ))}
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
